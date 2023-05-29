@@ -1,6 +1,7 @@
 import customtkinter as ctk
+import ebooklib
+from ebooklib import epub
 from image_widgets import *
-from PIL import Image, ImageTk
 from menu import Menu
 
 class App(ctk.CTk):
@@ -21,6 +22,11 @@ class App(ctk.CTk):
         self.mainloop()
 
     def import_image(self,path):
+        book = epub.read_epub('test.epub')
+
+        for image in book.get_items_of_type(ebooklib.ITEM_IMAGE):
+            print(image)
+
         self.image = Image.open(path)
         self.image_ratio = self.image.size[0] / self.image.size[1]
         self.image_tk = ImageTk.PhotoImage(self.image)
