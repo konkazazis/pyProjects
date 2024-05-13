@@ -5,24 +5,9 @@ import cpuinfo
 import socket
 import uuid
 import re
-
-import tkinter
+import tkinter as tk
+from tkinter import ttk
 import customtkinter
-import platform
-
-
-customtkinter.set_appearance_mode("System")
-customtkinter.set_default_color_theme("blue")
-
-# App frame
-app=customtkinter.CTk()
-app.geometry("500x500")
-app.title("Hardware Info")
-
-# UI Elements
-title = customtkinter.CTkLabel(app, text="Hardware Info", font=("Arial", 20))
-title.pack(padx=10,pady=10)
-
 
 def get_size(bytes, suffix="B"):
     """
@@ -37,126 +22,131 @@ def get_size(bytes, suffix="B"):
             return f"{bytes:.2f}{unit}{suffix}"
         bytes /= factor
 
-def System_information():
+def system_information(frame):
     # System Information
-    
     uname = platform.uname()
-    system = customtkinter.CTkLabel(app, text="System: "+uname.system)
-    node = customtkinter.CTkLabel(app, text="Node Name: "+uname.node)
-    release = customtkinter.CTkLabel(app, text="Release: "+uname.release)
-    version = customtkinter.CTkLabel(app, text="Version: "+uname.version)
-    machine = customtkinter.CTkLabel(app, text="Machine: "+uname.machine)
-    processor = customtkinter.CTkLabel(app, text=f"Processor: {cpuinfo.get_cpu_info()['brand_raw']}")
-    ip = customtkinter.CTkLabel(app, text=f"Ip-Address: {socket.gethostbyname(socket.gethostname())}")
-    mac = customtkinter.CTkLabel(app, text=f"Mac-Address: {':'.join(re.findall('..', '%012x' % uuid.getnode()))}")
-
-
-    system.pack()
-    node.pack()
-    release.pack()
-    version.pack()
-    machine.pack()
-    processor.pack()
-    ip.pack()
-    mac.pack()
-
+    system_label = customtkinter.CTkLabel(frame, text="System: "+uname.system)
+    system_label.grid(row=0, column=0, sticky="w")
+    node_label = customtkinter.CTkLabel(frame, text="Node Name: "+uname.node)
+    node_label.grid(row=1, column=0, sticky="w")
+    release_label = customtkinter.CTkLabel(frame, text="Release: "+uname.release)
+    release_label.grid(row=2, column=0, sticky="w")
+    version_label = customtkinter.CTkLabel(frame, text="Version: "+uname.version)
+    version_label.grid(row=3, column=0, sticky="w")
+    machine_label = customtkinter.CTkLabel(frame, text="Machine: "+uname.machine)
+    machine_label.grid(row=4, column=0, sticky="w")
+    processor_label = customtkinter.CTkLabel(frame, text=f"Processor: {cpuinfo.get_cpu_info()['brand_raw']}")
+    processor_label.grid(row=5, column=0, sticky="w")
+    ip_label = customtkinter.CTkLabel(frame, text=f"Ip-Address: {socket.gethostbyname(socket.gethostname())}")
+    ip_label.grid(row=6, column=0, sticky="w")
+    mac_label = customtkinter.CTkLabel(frame, text=f"Mac-Address: {':'.join(re.findall('..', '%012x' % uuid.getnode()))}")
+    mac_label.grid(row=7, column=0, sticky="w")
 
     # Boot Time
-    
     boot_time_timestamp = psutil.boot_time()
     bt = datetime.fromtimestamp(boot_time_timestamp)
-    boot_time = customtkinter.CTkLabel(app, text=f"Boot Time: {bt.year}/{bt.month}/{bt.day} {bt.hour}:{bt.minute}:{bt.second}")
-    boot_time.pack()
+    boot_time_label = customtkinter.CTkLabel(frame, text=f"Boot Time: {bt.year}/{bt.month}/{bt.day} {bt.hour}:{bt.minute}:{bt.second}")
+    boot_time_label.grid(row=8, column=0, sticky="w")
 
-    # number of cores
-    physical_cores = customtkinter.CTkLabel(app, text=f"Physical cores: {psutil.cpu_count(logical=False)}")
-    total_cores = customtkinter.CTkLabel(app, text=f"Total cores: {psutil.cpu_count(logical=True)}")
-    physical_cores.pack()
-    total_cores.pack()
-    # CPU frequencies
+    # CPU Cores
+    physical_cores_label = customtkinter.CTkLabel(frame, text=f"Physical cores: {psutil.cpu_count(logical=False)}")
+    physical_cores_label.grid(row=9, column=0, sticky="w")
+    total_cores_label = customtkinter.CTkLabel(frame, text=f"Total cores: {psutil.cpu_count(logical=True)}")
+    total_cores_label.grid(row=10, column=0, sticky="w")
+
+    # CPU Frequencies
     cpufreq = psutil.cpu_freq()
-    cpu_frequency = customtkinter.CTkLabel(app, text=f"Max Frequency: {cpufreq.max:.2f}Mhz")
-    cpu_min_frequency = customtkinter.CTkLabel(app, text=f"Min Frequency: {cpufreq.min:.2f}Mhz")
-    cpu_current_frequency = customtkinter.CTkLabel(app, text=f"Current Frequency: {cpufreq.current:.2f}Mhz")
-    cpu_frequency.pack()
-    cpu_min_frequency.pack()
-    cpu_current_frequency.pack()
-    
-    # CPU usage
-    print("CPU Usage Per Core:")
-    for i, percentage in enumerate(psutil.cpu_percent(percpu=True, interval=1)):
-        print(f"Core {i}: {percentage}%")
-    print(f"Total CPU Usage: {psutil.cpu_percent()}%")
+    cpu_frequency_label = customtkinter.CTkLabel(frame, text=f"Max Frequency: {cpufreq.max:.2f}Mhz")
+    cpu_frequency_label.grid(row=11, column=0, sticky="w")
+    cpu_min_frequency_label = customtkinter.CTkLabel(frame, text=f"Min Frequency: {cpufreq.min:.2f}Mhz")
+    cpu_min_frequency_label.grid(row=12, column=0, sticky="w")
+    cpu_current_frequency_label = customtkinter.CTkLabel(frame, text=f"Current Frequency: {cpufreq.current:.2f}Mhz")
+    cpu_current_frequency_label.grid(row=13, column=0, sticky="w")
 
+    # CPU Usage
+    cpu_usage_label = customtkinter.CTkLabel(frame, text="CPU Usage Per Core:")
+    cpu_usage_label.grid(row=14, column=0, sticky="w")
+    for i, percentage in enumerate(psutil.cpu_percent(percpu=True, interval=1)):
+        cpu_core_label = customtkinter.CTkLabel(frame, text=f"Core {i}: {percentage}%")
+        cpu_core_label.grid(row=15+i, column=0, sticky="w")
+    total_cpu_usage_label = customtkinter.CTkLabel(frame, text=f"Total CPU Usage: {psutil.cpu_percent()}%")
+    total_cpu_usage_label.grid(row=15+len(psutil.cpu_percent(percpu=True)), column=0, sticky="w")
 
     # Memory Information
-    print("="*40, "Memory Information", "="*40)
-    # get the memory details
     svmem = psutil.virtual_memory()
-    print(f"Total: {get_size(svmem.total)}")
-    print(f"Available: {get_size(svmem.available)}")
-    print(f"Used: {get_size(svmem.used)}")
-    print(f"Percentage: {svmem.percent}%")
+    memory_label = customtkinter.CTkLabel(frame, text=f"Memory Information: Total: {get_size(svmem.total)}, Available: {get_size(svmem.available)}, Used: {get_size(svmem.used)}, Percentage: {svmem.percent}%")
+    memory_label.grid(row=16+len(psutil.cpu_percent(percpu=True)), column=0, sticky="w")
 
-
-
-    print("="*20, "SWAP", "="*20)
-    # get the swap memory details (if exists)
+    # SWAP Information
     swap = psutil.swap_memory()
-    print(f"Total: {get_size(swap.total)}")
-    print(f"Free: {get_size(swap.free)}")
-    print(f"Used: {get_size(swap.used)}")
-    print(f"Percentage: {swap.percent}%")
-
-
+    swap_label = customtkinter.CTkLabel(frame, text=f"Swap Information: Total: {get_size(swap.total)}, Free: {get_size(swap.free)}, Used: {get_size(swap.used)}, Percentage: {swap.percent}%")
+    swap_label.grid(row=17+len(psutil.cpu_percent(percpu=True)), column=0, sticky="w")
 
     # Disk Information
-    print("="*40, "Disk Information", "="*40)
-    print("Partitions and Usage:")
-    # get all disk partitions
     partitions = psutil.disk_partitions()
-    for partition in partitions:
-        print(f"=== Device: {partition.device} ===")
-        print(f"  Mountpoint: {partition.mountpoint}")
-        print(f"  File system type: {partition.fstype}")
+    for i, partition in enumerate(partitions):
+        disk_info_frame = customtkinter.CTkFrame(frame)
+        disk_info_frame.grid(row=18+len(psutil.cpu_percent(percpu=True))+i, column=0, padx=10, pady=5, sticky="nsew")
+        disk_info_label = customtkinter.CTkLabel(disk_info_frame, text=f"Disk {i+1} Information")
+        disk_info_label.grid(row=0, column=0, sticky="w")
         try:
             partition_usage = psutil.disk_usage(partition.mountpoint)
+            partition_usage_label = customtkinter.CTkLabel(disk_info_frame, text=f"Total Size: {get_size(partition_usage.total)}, Used: {get_size(partition_usage.used)}, Free: {get_size(partition_usage.free)}, Percentage: {partition_usage.percent}%")
+            partition_usage_label.grid(row=1, column=0, sticky="w")
         except PermissionError:
-            # this can be catched due to the disk that
-            # isn't ready
             continue
-        print(f"  Total Size: {get_size(partition_usage.total)}")
-        print(f"  Used: {get_size(partition_usage.used)}")
-        print(f"  Free: {get_size(partition_usage.free)}")
-        print(f"  Percentage: {partition_usage.percent}%")
-    # get IO statistics since boot
     disk_io = psutil.disk_io_counters()
-    print(f"Total read: {get_size(disk_io.read_bytes)}")
-    print(f"Total write: {get_size(disk_io.write_bytes)}")
+    disk_io_label = customtkinter.CTkLabel(frame, text=f"Total read: {get_size(disk_io.read_bytes)}, Total write: {get_size(disk_io.write_bytes)}")
+    disk_io_label.grid(row=18+len(psutil.cpu_percent(percpu=True))+len(partitions), column=0, sticky="w")
 
-    ## Network information
-    print("="*40, "Network Information", "="*40)
-    ## get all network interfaces (virtual and physical)
+    # Network Information
     if_addrs = psutil.net_if_addrs()
     for interface_name, interface_addresses in if_addrs.items():
-        for address in interface_addresses:
-            print(f"=== Interface: {interface_name} ===")
+        network_info_frame = customtkinter.CTkFrame(frame)
+        network_info_frame.grid(row=19+len(psutil.cpu_percent(percpu=True))+len(partitions)+len(if_addrs), column=0, padx=10, pady=5, sticky="nsew")
+        network_info_label = customtkinter.CTkLabel(network_info_frame, text=f"Network Interface: {interface_name}")
+        network_info_label.grid(row=0, column=0, sticky="w")
+        for j, address in enumerate(interface_addresses):
             if str(address.family) == 'AddressFamily.AF_INET':
-                print(f"  IP Address: {address.address}")
-                print(f"  Netmask: {address.netmask}")
-                print(f"  Broadcast IP: {address.broadcast}")
+                ip_label = customtkinter.CTkLabel(network_info_frame, text=f"IP Address: {address.address}, Netmask: {address.netmask}, Broadcast IP: {address.broadcast}")
+                ip_label.grid(row=j+1, column=0, sticky="w")
             elif str(address.family) == 'AddressFamily.AF_PACKET':
-                print(f"  MAC Address: {address.address}")
-                print(f"  Netmask: {address.netmask}")
-                print(f"  Broadcast MAC: {address.broadcast}")
-    ##get IO statistics since boot
+                mac_label = customtkinter.CTkLabel(network_info_frame, text=f"MAC Address: {address.address}, Netmask: {address.netmask}, Broadcast MAC: {address.broadcast}")
+                mac_label.grid(row=j+1, column=0, sticky="w")
     net_io = psutil.net_io_counters()
-    print(f"Total Bytes Sent: {get_size(net_io.bytes_sent)}")
-    print(f"Total Bytes Received: {get_size(net_io.bytes_recv)}")
+    net_io_label = customtkinter.CTkLabel(frame, text=f"Total Bytes Sent: {get_size(net_io.bytes_sent)}, Total Bytes Received: {get_size(net_io.bytes_recv)}")
+    net_io_label.grid(row=19+len(psutil.cpu_percent(percpu=True))+len(partitions)+len(if_addrs)+1, column=0, sticky="w")
 
+def main():
+    customtkinter.set_appearance_mode("System")
+    customtkinter.set_default_color_theme("blue")
+
+    root = tk.Tk()
+    root.title("Hardware Info")
+    root.geometry("900x500")
+    
+    main_frame = customtkinter.CTkFrame(root)
+    main_frame.pack(expand=True, fill="both")
+
+    title_label = customtkinter.CTkLabel(main_frame, text="Hardware Info", font=("Arial", 20))
+    title_label.grid(row=0, column=0, columnspan=2, pady=(0, 10))
+
+    # Add Scrollbar
+    canvas = customtkinter.CTkCanvas(main_frame)
+    scrollbar = customtkinter.CTkScrollbar(main_frame, command=canvas.yview)
+    scrollable_frame = customtkinter.CTkFrame(canvas)
+
+    scrollable_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    canvas.grid(row=1, column=0, columnspan=2, sticky="nsew")
+    scrollbar.grid(row=1, column=2, sticky="ns")
+
+    system_information(scrollable_frame)
+
+    root.mainloop()
 
 if __name__ == "__main__":
-
-    System_information()
-
-app.mainloop()
+    main()
