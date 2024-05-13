@@ -42,17 +42,19 @@ def system_information(frame):
     mac_label = customtkinter.CTkLabel(frame, text=f"Mac-Address: {':'.join(re.findall('..', '%012x' % uuid.getnode()))}")
     mac_label.grid(row=7, column=0, sticky="w")
 
+def boot_time(frame):
     # Boot Time
     boot_time_timestamp = psutil.boot_time()
     bt = datetime.fromtimestamp(boot_time_timestamp)
     boot_time_label = customtkinter.CTkLabel(frame, text=f"Boot Time: {bt.year}/{bt.month}/{bt.day} {bt.hour}:{bt.minute}:{bt.second}")
-    boot_time_label.grid(row=8, column=0, sticky="w")
+    boot_time_label.grid(row=2, column=0, sticky="w")
 
+def cpu_information(frame):
     # CPU Cores
     physical_cores_label = customtkinter.CTkLabel(frame, text=f"Physical cores: {psutil.cpu_count(logical=False)}")
     physical_cores_label.grid(row=9, column=0, sticky="w")
     total_cores_label = customtkinter.CTkLabel(frame, text=f"Total cores: {psutil.cpu_count(logical=True)}")
-    total_cores_label.grid(row=10, column=0, sticky="w")
+    total_cores_label.grid(row=1, column=1, sticky="w")
 
     # CPU Frequencies
     cpufreq = psutil.cpu_freq()
@@ -72,15 +74,16 @@ def system_information(frame):
     total_cpu_usage_label = customtkinter.CTkLabel(frame, text=f"Total CPU Usage: {psutil.cpu_percent()}%")
     total_cpu_usage_label.grid(row=15+len(psutil.cpu_percent(percpu=True)), column=0, sticky="w")
 
+def memory_information(frame):
     # Memory Information
     svmem = psutil.virtual_memory()
     memory_label = customtkinter.CTkLabel(frame, text=f"Memory Information: Total: {get_size(svmem.total)}, Available: {get_size(svmem.available)}, Used: {get_size(svmem.used)}, Percentage: {svmem.percent}%")
-    memory_label.grid(row=16+len(psutil.cpu_percent(percpu=True)), column=0, sticky="w")
+    memory_label.grid(row=1+len(psutil.cpu_percent(percpu=True)), column=2, sticky="w")
 
     # SWAP Information
     swap = psutil.swap_memory()
     swap_label = customtkinter.CTkLabel(frame, text=f"Swap Information: Total: {get_size(swap.total)}, Free: {get_size(swap.free)}, Used: {get_size(swap.used)}, Percentage: {swap.percent}%")
-    swap_label.grid(row=17+len(psutil.cpu_percent(percpu=True)), column=0, sticky="w")
+    swap_label.grid(row=2+len(psutil.cpu_percent(percpu=True)), column=2, sticky="w")
 
     # Disk Information
     partitions = psutil.disk_partitions()
@@ -97,8 +100,10 @@ def system_information(frame):
             continue
     disk_io = psutil.disk_io_counters()
     disk_io_label = customtkinter.CTkLabel(frame, text=f"Total read: {get_size(disk_io.read_bytes)}, Total write: {get_size(disk_io.write_bytes)}")
-    disk_io_label.grid(row=18+len(psutil.cpu_percent(percpu=True))+len(partitions), column=0, sticky="w")
+    disk_io_label.grid(row=3+len(psutil.cpu_percent(percpu=True))+len(partitions), column=2, sticky="w")
 
+def network_information(frame):
+    partitions = psutil.disk_partitions()
     # Network Information
     if_addrs = psutil.net_if_addrs()
     for interface_name, interface_addresses in if_addrs.items():
@@ -118,10 +123,10 @@ def system_information(frame):
     net_io_label.grid(row=19+len(psutil.cpu_percent(percpu=True))+len(partitions)+len(if_addrs)+1, column=0, sticky="w")
 
 def main():
-    customtkinter.set_appearance_mode("System")
+    customtkinter.set_appearance_mode("light")
     customtkinter.set_default_color_theme("blue")
 
-    root = tk.Tk()
+    root = customtkinter.CTk()
     root.title("Hardware Info")
     root.geometry("900x500")
     
@@ -129,7 +134,7 @@ def main():
     main_frame.pack(expand=True, fill="both")
 
     title_label = customtkinter.CTkLabel(main_frame, text="Hardware Info", font=("Arial", 20))
-    title_label.grid(row=0, column=0, columnspan=2, pady=(0, 10))
+    title_label.grid(row=0, column=0, columnspan=3, pady=(0, 10))
 
     # Add Scrollbar
     canvas = customtkinter.CTkCanvas(main_frame)
@@ -141,12 +146,34 @@ def main():
     canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
     canvas.configure(yscrollcommand=scrollbar.set)
 
-    canvas.grid(row=1, column=0, columnspan=2, sticky="nsew")
-    scrollbar.grid(row=1, column=2, sticky="ns")
+    # Grid layout for canvas and scrollbar
+    canvas.grid(row=1, column=0, sticky="nsew")
+    scrollbar.grid(row=1, column=1, sticky="ns")
 
-    system_information(scrollable_frame)
+    # Configure row and column weights to make the canvas expand
+    main_frame.rowconfigure(1, weight=1)
+    main_frame.columnconfigure(0, weight=1)
+
+    # Row 1
+    row1_frame = customtkinter.CTkFrame(scrollable_frame)
+    row1_frame.grid(row=0, column=0, padx=10, pady=5, sticky="nsew")
+    system_information(row1_frame)
+    boot_time(row1_frame)
+
+    # Row 2
+    row2_frame = customtkinter.CTkFrame(scrollable_frame)
+    row2_frame.grid(row=0, column=1, padx=10, pady=5, sticky="nsew")
+    cpu_information(row2_frame)
+    memory_information(row2_frame)
+
+    # Row 3
+    row3_frame = customtkinter.CTkFrame(scrollable_frame)
+    row3_frame.grid(row=0, column=2, padx=10, pady=5, sticky="nsew")
+    network_information(row3_frame)
 
     root.mainloop()
 
 if __name__ == "__main__":
     main()
+
+
