@@ -78,12 +78,12 @@ def memory_information(frame):
     # Memory Information
     svmem = psutil.virtual_memory()
     memory_label = customtkinter.CTkLabel(frame, text=f"Memory Information: Total: {get_size(svmem.total)}, Available: {get_size(svmem.available)}, Used: {get_size(svmem.used)}, Percentage: {svmem.percent}%")
-    memory_label.grid(row=1+len(psutil.cpu_percent(percpu=True)), column=2, sticky="w")
+    memory_label.grid(row=1+len(psutil.cpu_percent(percpu=True)), column=0, sticky="w")
 
     # SWAP Information
     swap = psutil.swap_memory()
     swap_label = customtkinter.CTkLabel(frame, text=f"Swap Information: Total: {get_size(swap.total)}, Free: {get_size(swap.free)}, Used: {get_size(swap.used)}, Percentage: {swap.percent}%")
-    swap_label.grid(row=2+len(psutil.cpu_percent(percpu=True)), column=2, sticky="w")
+    swap_label.grid(row=2+len(psutil.cpu_percent(percpu=True)), column=0, sticky="w")
 
     # Disk Information
     partitions = psutil.disk_partitions()
@@ -100,7 +100,7 @@ def memory_information(frame):
             continue
     disk_io = psutil.disk_io_counters()
     disk_io_label = customtkinter.CTkLabel(frame, text=f"Total read: {get_size(disk_io.read_bytes)}, Total write: {get_size(disk_io.write_bytes)}")
-    disk_io_label.grid(row=3+len(psutil.cpu_percent(percpu=True))+len(partitions), column=2, sticky="w")
+    disk_io_label.grid(row=3+len(psutil.cpu_percent(percpu=True))+len(partitions), column=0, sticky="w")
 
 def network_information(frame):
     partitions = psutil.disk_partitions()
@@ -154,22 +154,25 @@ def main():
     main_frame.rowconfigure(1, weight=1)
     main_frame.columnconfigure(0, weight=1)
 
-    # Row 1
-    row1_frame = customtkinter.CTkFrame(scrollable_frame)
-    row1_frame.grid(row=0, column=0, padx=10, pady=5, sticky="nsew")
-    system_information(row1_frame)
-    boot_time(row1_frame)
+    # Column1
+    column1_frame = customtkinter.CTkFrame(scrollable_frame)
+    column1_frame.grid(row=0, column=0, padx=10, pady=5, sticky="nsew")
+    system_information(column1_frame)
+    boot_time(column1_frame)
 
-    # Row 2
-    row2_frame = customtkinter.CTkFrame(scrollable_frame)
-    row2_frame.grid(row=0, column=1, padx=10, pady=5, sticky="nsew")
-    cpu_information(row2_frame)
-    memory_information(row2_frame)
+    column1_frame2 = customtkinter.CTkFrame(scrollable_frame)
+    column1_frame2.grid(row=1, column=0, padx=10, pady=5, sticky="nsew")
+    memory_information(column1_frame2)
 
-    # Row 3
-    row3_frame = customtkinter.CTkFrame(scrollable_frame)
-    row3_frame.grid(row=0, column=2, padx=10, pady=5, sticky="nsew")
-    network_information(row3_frame)
+    # column2
+    column2_frame = customtkinter.CTkFrame(scrollable_frame)
+    column2_frame.grid(row=0, column=1, padx=10, pady=5, sticky="nsew")
+    cpu_information(column2_frame)
+
+    # column3
+    column3_frame = customtkinter.CTkFrame(scrollable_frame)
+    column3_frame.grid(row=0, column=2, padx=10, pady=5, sticky="nsew")
+    network_information(column3_frame)
 
     root.mainloop()
 
